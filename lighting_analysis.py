@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from deap import base, creator, tools
+import random
+#from deap import base, creator, tools
 
 # import required lighting array and lamp array
 requiredLighting = np.genfromtxt('Test_LightData2.csv', delimiter=',')
@@ -43,7 +44,22 @@ xmax = requiredLighting.shape[1] - lamp.shape[0]
 ymin = 0
 ymax = requiredLighting.shape[0] - lamp.shape[1]
 
-# example which adds a lamp at position (0,0) on the achieved lighting array
-achievedLighting = addAtPos(achievedLighting,lamp,(0,0))
+# very basic randomized optimization (that's not working well)
+first=1
+for individual in range(0,100):
+	for x in range(0,50):
+		xrand = random.randint(xmin, xmax)
+		yrand = random.randint(ymin, ymax)
+		addAtPos(achievedLighting,lamp,(yrand,xrand))
+	if first:
+		highScore = fitness(requiredLighting,achievedLighting)
+		bestOf = achievedLighting
+		first=0
+	if fitness(requiredLighting,achievedLighting) > highScore:
+		bestOf = achievedLighting
+		highScore = fitness(requiredLighting,achievedLighting)
+	print highScore
+	achievedLighting = np.zeros((requiredLighting.shape[0],requiredLighting.shape[1]))
 
-creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+plotHeatmap(requiredLighting)
+plotHeatmap(bestOf)
